@@ -106,14 +106,17 @@ public class HardwareMonitorService : BackgroundService
         }
     }
     
-    private async Task BroadcastHardwareData()
+    private async Task BroadcastHardwareData(bool bShowToConsole = true)
     {
         var data = _repository.GetAllHardwareInfo();
         var options = new JsonSerializerOptions
         {
             NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowNamedFloatingPointLiterals
         };
-
-        await _webSocketHandler.BroadcastAsync(JsonSerializer.Serialize(data, options));
+        string json = JsonSerializer.Serialize(data, options);
+        if(bShowToConsole){
+            _logger.LogInformation("Hardware Data: {Json}", json);
+        }
+        await _webSocketHandler.BroadcastAsync(json);
     }
 }
